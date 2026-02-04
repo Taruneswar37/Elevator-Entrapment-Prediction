@@ -7,6 +7,17 @@ BASE = os.path.dirname(__file__)
 MODEL = os.path.join(BASE, "../models/kone_production_lstm.keras")
 CONF  = os.path.join(BASE, "../models/production_config.joblib")
 
+def download_if_missing():
+    os.makedirs(os.path.join(BASE, "../models"), exist_ok=True)
+
+    if not os.path.exists(MODEL):
+        gdown.download("https://drive.google.com/file/d/1JeoYHNNBMHwQcZgSxZQ_uQjBV0jV-Ogj/view?usp=drive_link", MODEL, quiet=False)
+
+    if not os.path.exists(CONF):
+        gdown.download("https://drive.google.com/file/d/1u7JWHykAk5dSKZK1B2DhBifj6SpIuvlS/view?usp=drive_link", CONF, quiet=False)
+
+download_if_missing()
+
 def focal_loss(gamma=2., alpha=.25):
     def focal_loss_fixed(y_true, y_pred):
         bce = tf.keras.losses.binary_crossentropy(y_true, y_pred)
