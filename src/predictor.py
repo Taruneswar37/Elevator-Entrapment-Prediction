@@ -2,6 +2,8 @@ import numpy as np
 import tensorflow as tf
 import joblib
 import os
+import gdown
+
 
 BASE = os.path.dirname(__file__)
 MODEL = os.path.join(BASE, "../models/kone_production_lstm.keras")
