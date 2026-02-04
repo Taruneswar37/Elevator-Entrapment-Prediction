@@ -8,7 +8,15 @@ import os, time
 from sensor_simulator import ElevatorSensor
 from predictor import predict_live
 
-LOG = os.path.join(os.path.dirname(__file__), "../logs/prediction_history.csv")
+BASE = os.path.dirname(__file__)
+
+# ✅ PROPER Render-safe log location
+LOG_DIR = os.path.join(BASE, "logs")
+LOG = os.path.join(LOG_DIR, "prediction_history.csv")
+
+# 👉 FORCE folder creation on startup
+os.makedirs(LOG_DIR, exist_ok=True)
+
 
 sensor = ElevatorSensor()
 
@@ -16,16 +24,35 @@ app = dash.Dash(__name__)
 app.title = "Elevator – Real Time Safety"
 
 def save_log(data):
-    df = pd.DataFrame([data])
-    if not os.path.exists(LOG):
-        df.to_csv(LOG, index=False)
-    else:
-        df.to_csv(LOG, mode='a', header=False, index=False)
+    try:
+        df = pd.DataFrame([data])
+
+        # ensure directory always exists
+        os.makedirs(LOG_DIR, exist_ok=True)
+
+        if not os.path.exists(LOG):
+            df.to_csv(LOG, index=False)
+        else:
+            df.to_csv(LOG, mode='a', header=False, index=False)
+
+    except Exception as e:
+        print("LOG SAVE ERROR:", e)
+
 
 def load_trend():
-    if os.path.exists(LOG):
-        return pd.read_csv(LOG).tail(20)
-    return pd.DataFrame()
+    try:
+        if os.path.exists(LOG):
+            df = pd.read_csv(LOG).tail(20)
+            if not df.empty:
+                return df
+    except:
+        pass
+
+    # fallback empty structure
+    return pd.DataFrame(columns=[
+        "time","risk","vibration","temperature"
+    ])
+
 
 def gauge(v):
     return go.Figure(go.Indicator(
@@ -102,5 +129,6 @@ def update(_):
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
 
