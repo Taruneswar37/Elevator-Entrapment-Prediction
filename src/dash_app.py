@@ -75,7 +75,27 @@ app.layout = html.Div([
 
     dcc.Interval(id='timer', interval=4000),
 
-    dcc.Graph(id='gauge'),
+    html.Div([
+        # LEFT – GAUGE
+        html.Div([
+            dcc.Graph(id='gauge')
+        ], style={'width':'60%', 'display':'inline-block'}),
+
+        # RIGHT – RISK BOX (NEW)
+        html.Div([
+            html.H3("Risk Assessment", style={'textAlign':'center'}),
+
+            html.Div(id='risk_box', style={
+                'border':'2px solid black',
+                'padding':'20px',
+                'borderRadius':'15px',
+                'minHeight':'180px',
+                'fontSize':'18px'
+            })
+        ], style={'width':'35%', 'display':'inline-block',
+                  'verticalAlign':'top', 'marginLeft':'20px'})
+
+    ]),
 
     html.Div(id='status'),
 
@@ -85,11 +105,13 @@ app.layout = html.Div([
 
 ])
 
+
 @app.callback(
     [Output('gauge','figure'),
      Output('status','children'),
      Output('trend','figure'),
-     Output('raw','figure')],
+     Output('raw','figure'),
+     Output('risk_box','children')],
     [Input('timer','n_intervals')]
 )
 def update(_):
@@ -103,11 +125,41 @@ def update(_):
 
     save_log(data)
 
-    status = "✅ SAFE"
-    color="green"
-    if risk:
-        status="🚨 HIGH RISK – CALL MAINTENANCE"
-        color="red"
+    # ---------- STATUS ----------
+    if proba < 0.4:
+        label = "🟢 SAFE"
+        msg = "Elevator operating in normal condition"
+        color = "green"
+
+    elif proba < 0.7:
+        label = "🟠 MODERATE RISK"
+        msg = "Early abnormal behaviour detected"
+        color = "orange"
+
+    else:
+        label = "🔴 HIGH RISK – PRONE TO ENTRAPMENT"
+        msg = "Immediate maintenance required!"
+        color = "red"
+
+    status = html.H3(label, style={'color':color})
+
+    # ---------- RISK INFO BOX ----------
+    risk_box = html.Div([
+
+        html.H2(f"{round(proba*100,2)} %", style={'color':color}),
+
+        html.H3(label, style={'color':color}),
+
+        html.P(msg),
+
+        html.P("Range Guide:"),
+        html.Ul([
+            html.Li("0–40  → SAFE"),
+            html.Li("40–70 → MODERATE RISK"),
+            html.Li("70–100 → HIGH RISK")
+        ])
+
+    ])
 
     df = load_trend()
 
@@ -125,7 +177,7 @@ def update(_):
     raw.add_trace(go.Scatter(y=df["temperature"], name="temp"))
     raw.update_layout(title="Sensor Behaviour")
 
-    return gauge(proba), html.H3(status,style={'color':color}), trend, raw
+    return gauge(proba), status, trend, raw, risk_box
 
 
 if __name__ == "__main__":
