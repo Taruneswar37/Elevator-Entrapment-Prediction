@@ -44,7 +44,7 @@ def gauge(v):
 
 app.layout = html.Div([
 
-    html.H1("🛗 Elevator – Real Time Entrapment Monitor"),
+    html.H1("🛗 KONE Elevator – Real Time Entrapment Monitor"),
 
     dcc.Interval(id='timer', interval=4000),
 
@@ -101,5 +101,6 @@ def update(_):
     return gauge(proba), html.H3(status,style={'color':color}), trend, raw
 
 
-if __name__=='__main__':
-    app.run(debug=True)
+if __name__ == "__main__":
+    app.run_server(host="0.0.0.0", port=10000)
+

@@ -1,0 +1,19 @@
+# Core
+numpy
+pandas
+scikit-learn
+imbalanced-learn
+
+# Deep Learning
+tensorflow
+
+# Visualization
+matplotlib
+seaborn
+plotly
+
+# Dashboard
+dash
+
+# Utils
+joblib
