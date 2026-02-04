@@ -132,12 +132,12 @@ def update(_):
         color = "green"
 
     elif proba < 0.7:
-        label = "🟠 MODERATE RISK"
+        label = "🟠 CHANCE TO RISK"
         msg = "Early abnormal behaviour detected"
         color = "orange"
 
     else:
-        label = "🔴 HIGH RISK – PRONE TO ENTRAPMENT"
+        label = "🔴 UNDER RISK"
         msg = "Immediate maintenance required!"
         color = "red"
 
@@ -154,9 +154,9 @@ def update(_):
 
         html.P("Range Guide:"),
         html.Ul([
-            html.Li("0–40  → SAFE"),
-            html.Li("40–70 → MODERATE RISK"),
-            html.Li("70–100 → HIGH RISK")
+            html.Li("0 – 40   → SAFE"),
+            html.Li("40 – 70  → CHANCE TO RISK"),
+            html.Li("70 – 100 → UNDER RISK")
         ])
 
     ])
