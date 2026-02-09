@@ -1,0 +1,250 @@
+# 🛗 AI-Powered Elevator Entrapment Risk Predictor
+
+### Real-Time Predictive Maintenance using LSTM & IoT Sensor Simulation
+
+An end-to-end **Machine Learning + Dashboard System** that predicts the probability of elevator entrapment using sequential sensor behavior.
+This project mimics an industrial predictive safety system used in smart elevators.
+
+---
+
+## 🌐 Live Demo
+
+🚀 **Deployed Application:**
+👉 [https://elevator-entrapment-prediction.onrender.com](https://elevator-entrapment-prediction.onrender.com)
+
+The application is fully hosted on Render and performs:
+
+* Real-time sensor simulation
+* Live LSTM inference
+* Risk visualization dashboard
+* Automatic logging
+
+---
+
+## 🚀 Project Overview
+
+Elevator safety is mission-critical. Instead of reacting after failure, this system:
+
+* Continuously monitors elevator signals
+* Learns patterns using **LSTM time-series deep learning**
+* Estimates **risk probability in real time**
+* Shows alerts through an interactive dashboard
+
+### Risk Levels
+
+```
+0 – 40   → SAFE  
+40 – 70  → CHANCE TO RISK  
+70 – 100 → UNDER RISK
+```
+
+---
+
+## 🧠 Key Features
+
+✔ Real-time sensor simulation
+✔ Sequence-based LSTM prediction
+✔ Probability-based risk estimation
+✔ Interactive Plotly Dash UI
+✔ Auto model download from cloud
+✔ CSV logging for future analytics
+✔ Cloud deployed on Render
+
+---
+
+## 🧩 Tech Stack
+
+| Component   | Technology      |
+| ----------- | --------------- |
+| Frontend    | Plotly Dash     |
+| ML Model    | TensorFlow LSTM |
+| Backend     | Python          |
+| Storage     | CSV Logging     |
+| Model Utils | joblib, gdown   |
+| Deployment  | Render          |
+
+---
+
+## 📂 Project Structure
+
+```
+KONE-ENTRAPMENT-PREDICTOR/
+│
+├── data/
+│   └── elevator_data.csv
+│
+├── logs/
+│   └── prediction_history.csv
+│
+├── models/
+│   ├── kone_production_lstm.keras
+│   ├── production_config.joblib
+│   └── production_safety_cm.png
+│
+├── src/
+│   ├── dash_app.py
+│   ├── predictor.py
+│   ├── sensor_simulator.py
+│   ├── generate_data.py
+│   └── train_safety_lstm.py
+│
+├── venv/
+├── .gitignore
+└── requirements.txt
+```
+
+---
+
+## ⚙ How the System Works
+
+### 1. Sensor Simulation
+
+Generates realistic elevator signals:
+
+* vibration
+* temperature
+* usage rate
+* door cycles
+* speed
+
+### 2. LSTM Prediction
+
+* Uses last 10 time steps
+* Learns temporal behavior
+* Outputs risk probability
+
+### 3. Dashboard
+
+* Gauge meter
+* Trend graph
+* Raw sensor view
+* Status indicator
+
+---
+
+## 🛠 Installation
+
+```bash
+git clone <your-repo-url>
+cd KONE-ENTRAPMENT-PREDICTOR
+
+python -m venv venv
+source venv/bin/activate      # Windows: venv\Scripts\activate
+
+pip install -r requirements.txt
+```
+
+---
+
+## ▶ Run Locally
+
+```bash
+python src/dash_app.py
+```
+
+Open:
+
+👉 [http://127.0.0.1:10000](http://127.0.0.1:10000)
+
+---
+
+## ☁ Deployment (Render)
+
+**Start Command**
+
+```
+python src/dash_app.py
+```
+
+Port auto-detected:
+
+```python
+port = int(os.environ.get("PORT", 10000))
+```
+
+Live URL:
+👉 [https://elevator-entrapment-prediction.onrender.com](https://elevator-entrapment-prediction.onrender.com)
+
+---
+
+## 📊 Model Concept
+
+* Sequence Length → 10
+* Input Features → 8
+* Custom Loss → Focal Loss
+* Output → Probability Score
+
+This is a **predictive advisory system**, not a deterministic fault detector.
+
+---
+
+## 📈 Future Enhancements
+
+* Real IoT integration (MQTT)
+* Multi-elevator support
+* Auto maintenance ticket creation
+* Explainable AI dashboard
+* Mobile alerts
+
+---
+
+## 📊 Model Metrics Explanation
+**1.What Are We Measuring?**
+
+The model predicts a risk probability (0–1) that represents the chance of elevator entrapment based on the last 10 time steps of sensor data.
+
+Instead of simple accuracy, we focus on:
+
+How well the model detects risky situations.
+
+How early it can identify failure patterns.
+
+How reliable the probability score is.
+
+**2.Why LSTM Instead of Normal ML?**
+
+Traditional models see:
+
+only current row
+
+no time behavior
+
+LSTM learns:
+
+vibration increasing slowly
+
+temperature rising pattern
+
+repeated door retries
+
+👉 Entrapment is a sequence problem, not a single value problem.
+
+**3.Custom Loss Function**
+
+Used Focal Loss instead of normal Cross-Entropy because:
+
+Risk cases are rare
+
+Model must focus more on difficult samples
+
+Reduces bias toward SAFE class
+
+**4.Sample Result Interpretation**
+
+If model predicts:
+
+0.82 → UNDER RISK → immediate inspection
+
+0.55 → CHANCE TO RISK → monitor closely
+
+0.18 → SAFE → normal operation
+
+---
+
+## 🎯 Learning Outcomes
+
+* Time-series deep learning
+* Industrial AI design
+* Real-time visualization
+* Cloud deployment
+* Safety-oriented ML
