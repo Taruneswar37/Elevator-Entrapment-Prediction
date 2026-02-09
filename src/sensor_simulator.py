@@ -11,20 +11,17 @@ class ElevatorSensor:
         self.speed = 1.0
 
     def next(self):
-        # normal behaviour
         self.vibration += random.uniform(-0.3, 0.3)
         self.temp += random.uniform(-0.5, 0.5)
         self.doors += random.randint(0, 3)
         self.usage += random.uniform(-2, 2)
 
-        # RANDOM FAILURE PATTERNS
+
         if random.random() < 0.08:
-            # door issue
             self.vibration += random.uniform(2, 4)
             self.temp += 3
 
         if random.random() < 0.05:
-            # overload
             self.speed -= 0.3
             self.temp += 4
 

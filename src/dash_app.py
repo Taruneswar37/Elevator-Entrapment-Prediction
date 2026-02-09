@@ -10,13 +10,10 @@ from predictor import predict_live
 
 BASE = os.path.dirname(__file__)
 
-# ✅ PROPER Render-safe log location
 LOG_DIR = os.path.join(BASE, "logs")
 LOG = os.path.join(LOG_DIR, "prediction_history.csv")
 
-# 👉 FORCE folder creation on startup
 os.makedirs(LOG_DIR, exist_ok=True)
-
 
 sensor = ElevatorSensor()
 
@@ -27,7 +24,6 @@ def save_log(data):
     try:
         df = pd.DataFrame([data])
 
-        # ensure directory always exists
         os.makedirs(LOG_DIR, exist_ok=True)
 
         if not os.path.exists(LOG):
@@ -48,7 +44,6 @@ def load_trend():
     except:
         pass
 
-    # fallback empty structure
     return pd.DataFrame(columns=[
         "time","risk","vibration","temperature"
     ])
@@ -76,12 +71,10 @@ app.layout = html.Div([
     dcc.Interval(id='timer', interval=4000),
 
     html.Div([
-        # LEFT – GAUGE
         html.Div([
             dcc.Graph(id='gauge')
         ], style={'width':'60%', 'display':'inline-block'}),
 
-        # RIGHT – RISK BOX (NEW)
         html.Div([
             html.H3("Risk Assessment", style={'textAlign':'center'}),
 
@@ -125,7 +118,6 @@ def update(_):
 
     save_log(data)
 
-    # ---------- STATUS ----------
     if proba < 0.4:
         label = "🟢 SAFE"
         msg = "Elevator operating in normal condition"
@@ -143,7 +135,6 @@ def update(_):
 
     status = html.H3(label, style={'color':color})
 
-    # ---------- RISK INFO BOX ----------
     risk_box = html.Div([
 
         html.H2(f"{round(proba*100,2)} %", style={'color':color}),
@@ -175,7 +166,8 @@ def update(_):
     raw = go.Figure()
     raw.add_trace(go.Scatter(y=df["vibration"], name="vibration"))
     raw.add_trace(go.Scatter(y=df["temperature"], name="temp"))
-    raw.update_layout(title="Sensor Behaviour")
+    raw.update_layout(title="Sensor Behaviour"
+                      )
 
     return gauge(proba), status, trend, raw, risk_box
 

@@ -1,7 +1,3 @@
-# =====================================================
-# src/train_safety_lstm.py
-# =====================================================
-
 import os
 import pandas as pd
 import numpy as np
@@ -21,8 +17,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import joblib
 
-# ------------------- PATHS -------------------
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))       # src/
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))       
 DATA_DIR = os.path.join(BASE_DIR, "../data")
 MODEL_DIR = os.path.join(BASE_DIR, "../models")
 os.makedirs(MODEL_DIR, exist_ok=True)
@@ -32,9 +27,6 @@ MODEL_PATH = os.path.join(MODEL_DIR, "kone_production_lstm.keras")
 CONFIG_PATH = os.path.join(MODEL_DIR, "production_config.joblib")
 CM_PATH = os.path.join(MODEL_DIR, "production_safety_cm.png")
 
-# =====================================================
-# 1. SEQUENCE CREATION
-# =====================================================
 def create_sequences(X, y, time_steps=10):
     Xs, ys = [], []
     for i in range(len(X) - time_steps):
@@ -42,9 +34,6 @@ def create_sequences(X, y, time_steps=10):
         ys.append(y.iloc[i + time_steps])
     return np.array(Xs), np.array(ys)
 
-# =====================================================
-# 2. LOAD DATA
-# =====================================================
 print("Loading data...")
 data = pd.read_csv(CSV_PATH)
 
@@ -54,15 +43,9 @@ y = data['entrapment_risk']
 print("Original imbalance:")
 print(y.value_counts(normalize=True))
 
-# =====================================================
-# 3. SCALING
-# =====================================================
 scaler = StandardScaler()
 X_scaled = pd.DataFrame(scaler.fit_transform(X), columns=X.columns, index=X.index)
 
-# =====================================================
-# 4. BALANCE WITH SMOTE BEFORE SEQUENCES
-# =====================================================
 sm = SMOTE(random_state=42)
 Xb, yb = sm.fit_resample(X_scaled, y)
 
@@ -72,9 +55,6 @@ yb = pd.Series(yb)
 print("After SMOTE balance:")
 print(yb.value_counts())
 
-# =====================================================
-# 5. CREATE SEQUENCES
-# =====================================================
 X_seq, y_seq = create_sequences(Xb, yb)
 print(f"Sequence shapes: X={X_seq.shape}, y={y_seq.shape}")
 
@@ -85,9 +65,6 @@ X_train, X_test, y_train, y_test = train_test_split(
     stratify=y_seq
 )
 
-# =====================================================
-# 6. FOCAL LOSS FOR RARE SAFETY EVENTS
-# =====================================================
 def focal_loss(gamma=2., alpha=.25):
     def focal_loss_fixed(y_true, y_pred):
         bce = tf.keras.losses.binary_crossentropy(y_true, y_pred)
@@ -95,9 +72,6 @@ def focal_loss(gamma=2., alpha=.25):
         return alpha * (1 - pt) ** gamma * bce
     return focal_loss_fixed
 
-# =====================================================
-# 7. MODEL ARCHITECTURE
-# =====================================================
 model = Sequential([
     Bidirectional(LSTM(64, return_sequences=True), input_shape=(X_train.shape[1], X_train.shape[2])),
     Dropout(0.4),
@@ -113,9 +87,6 @@ model.compile(
     metrics=['accuracy', tf.keras.metrics.Recall(name='recall')]
 )
 
-# =====================================================
-# 8. TRAINING
-# =====================================================
 callbacks = [
     EarlyStopping(monitor='val_recall', patience=10, restore_best_weights=True, mode='max'),
     ModelCheckpoint(MODEL_PATH, monitor='val_recall', save_best_only=True, mode='max')
@@ -131,9 +102,6 @@ history = model.fit(
     verbose=1
 )
 
-# =====================================================
-# 9. THRESHOLD OPTIMIZATION (≥95% RECALL)
-# =====================================================
 print("Evaluating safety performance...")
 y_proba = model.predict(X_test).flatten()
 
@@ -153,9 +121,6 @@ for t in thresholds:
 safety_thresh = best_thresh
 y_pred_safety = (y_proba > safety_thresh).astype(int)
 
-# =====================================================
-# 10. REPORT
-# =====================================================
 print(f"\n🎯 SAFETY RESULTS (Threshold={safety_thresh:.3f})")
 print(classification_report(y_test, y_pred_safety, target_names=['Safe', 'Entrapment Risk']))
 
@@ -172,9 +137,6 @@ plt.xlabel("Predicted")
 plt.savefig(CM_PATH, dpi=300)
 plt.show()
 
-# =====================================================
-# 11. SAVE CONFIG
-# =====================================================
 joblib.dump({
     "scaler": scaler,
     "threshold": float(safety_thresh),

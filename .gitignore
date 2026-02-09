@@ -6,3 +6,4 @@ logs/
 *.h5
 *.csv
 __pycache__/
+*.png
